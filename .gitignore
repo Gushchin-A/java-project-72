@@ -1,0 +1,52 @@
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store
+/.DS_Store
+
+# Игнорируем файл в любой директории проекта
+access.log
+
+# Игнорируем директорию в любой директории проекта
+node_modules/
+
+# Игнорируем все файлы с расширением sqlite3 в директории db
+/db/*.sqlite3
+
+# Игнорировать все .txt файлы в каталоге doc/ на всех уровнях вложенности
+doc/**/*.txt
