@@ -1,7 +1,10 @@
 build:
 	cd app && ./gradlew build
 
-test: # короткий вариант запуска исполняемого файла
+run:
+	cd app && ./gradlew run
+
+test:
 	cd app && ./gradlew test
 
 .PHONY: build test

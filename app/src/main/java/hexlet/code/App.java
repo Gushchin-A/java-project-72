@@ -2,8 +2,16 @@ package hexlet.code;
 
 import io.javalin.Javalin;
 
-public class App {
+public final class App {
 
+    private App() {
+    }
+
+    /**
+     * Builds Javalin application.
+     *
+     * @return Javalin app
+     */
     public static Javalin getApp() {
         Javalin app = Javalin.create(config -> {
             config.bundledPlugins.enableDevLogging();
@@ -14,7 +22,12 @@ public class App {
         return app;
     }
 
-    public static void main(String[] args) {
+    /**
+     * Starts the app.
+     *
+     * @param args command line arguments
+     */
+    public static void main(final String[] args) {
         Javalin app = getApp();
         int port = getPort();
         app.start(port);
