@@ -20,10 +20,18 @@ repositories {
 
 dependencies {
     implementation("io.javalin:javalin:6.7.0")
-    implementation("org.projectlombok:lombok:1.18.40")
     implementation("org.slf4j:slf4j-simple:2.0.17")
-    testImplementation("org.projectlombok:lombok:1.18.40")
+    implementation("com.zaxxer:HikariCP:6.3.2")
+    implementation("com.h2database:h2:2.3.232")
+    implementation("org.postgresql:postgresql:42.7.8")
+
+    implementation("org.projectlombok:lombok:1.18.40")
     compileOnly("org.projectlombok:lombok:1.18.40")
+    annotationProcessor("org.projectlombok:lombok:1.18.40")
+    testImplementation("org.projectlombok:lombok:1.18.40")
+    testCompileOnly("org.projectlombok:lombok:1.18.40")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.40")
+
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
