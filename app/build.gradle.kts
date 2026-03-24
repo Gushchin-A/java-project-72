@@ -24,6 +24,8 @@ dependencies {
     implementation("com.zaxxer:HikariCP:6.3.2")
     implementation("com.h2database:h2:2.3.232")
     implementation("org.postgresql:postgresql:42.7.8")
+    implementation("gg.jte:jte:3.2.1")
+    implementation("io.javalin:javalin-rendering:6.6.0")
 
     implementation("org.projectlombok:lombok:1.18.40")
     compileOnly("org.projectlombok:lombok:1.18.40")

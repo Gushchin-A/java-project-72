@@ -2,8 +2,12 @@ package hexlet.code;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import gg.jte.ContentType;
+import gg.jte.TemplateEngine;
+import gg.jte.resolve.ResourceCodeResolver;
 import hexlet.code.repository.BaseRepository;
 import io.javalin.Javalin;
+import io.javalin.rendering.template.JavalinJte;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,9 +38,12 @@ public final class App {
         initDatabase();
 
         Javalin app = Javalin.create(
-                config -> config.bundledPlugins.enableDevLogging());
+                config -> {
+                    config.bundledPlugins.enableDevLogging();
+                    config.fileRenderer(new JavalinJte(createTemplateEngine()));
+                });
 
-        app.get("/", ctx -> ctx.result("Hello, world!"));
+        app.get("/", ctx -> ctx.render("index.jte"));
 
         return app;
     }
@@ -84,5 +91,13 @@ public final class App {
                 statement.execute(schema);
             }
         }
+    }
+
+    private static TemplateEngine createTemplateEngine() {
+        ClassLoader classLoader = App.class.getClassLoader();
+        ResourceCodeResolver codeResolver = new ResourceCodeResolver(
+                "templates", classLoader);
+
+        return TemplateEngine.create(codeResolver, ContentType.Html);
     }
 }

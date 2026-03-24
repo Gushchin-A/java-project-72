@@ -50,3 +50,7 @@ node_modules/
 
 # Игнорировать все .txt файлы в каталоге doc/ на всех уровнях вложенности
 doc/**/*.txt
+
+# jte
+jte-classes/
+app/jte-classes/
