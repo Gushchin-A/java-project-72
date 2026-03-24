@@ -70,13 +70,41 @@ public final class UrlRepository {
     }
 
     /**
+     * Finds url by name.
+     *
+     * @param name url
+     * @throws SQLException if database error
+     * @return optional with url if found
+     */
+    public static Optional<Url> findByName(
+            final String name) throws SQLException {
+        String sql = "SELECT * FROM urls WHERE name = ?";
+
+        try (Connection connection = BaseRepository
+                .getDataSource()
+                .getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, name);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    Url url = buildUrl(resultSet);
+                    return Optional.of(url);
+                }
+                return Optional.empty();
+            }
+        }
+    }
+
+    /**
      * Returns all urls.
      *
      * @return list of urls
      * @throws SQLException if database error
      */
     public static List<Url> getEntities() throws SQLException {
-        String sql = "SELECT * FROM urls ORDER BY id DESC";
+        String sql = "SELECT * FROM urls ORDER BY created_at DESC";
 
         try (Connection connection = BaseRepository
                 .getDataSource()
