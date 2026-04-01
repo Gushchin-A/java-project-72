@@ -33,19 +33,39 @@ public final class UrlChecker {
         }
 
         String body = response.getBody();
-
         Document document = Jsoup.parse(body);
-        String title = document.title();
 
-        Element h1Element = document.selectFirst("h1");
-        String h1 = h1Element != null ? h1Element.text() : "";
-
-        Element descriptionElement = document
-                .selectFirst("meta[name=description]");
-        String description = descriptionElement != null
-                ? descriptionElement.attr("content")
-                : "";
+        String title = normalizeText(document.title());
+        String h1 = getText(document.selectFirst("h1"));
+        String description = getAttribute(document
+                .selectFirst(
+                        "meta[name=description]"), "content");
 
         return new UrlCheck(statusCode, title, h1, description, url.getId());
+    }
+
+    private static String getText(final Element element) {
+        if (element == null) {
+            return null;
+        }
+
+        return normalizeText(element.text());
+    }
+
+    private static String getAttribute(
+            final Element element, final String attributeName) {
+        if (element == null) {
+            return null;
+        }
+
+        return normalizeText(element.attr(attributeName));
+    }
+
+    private static String normalizeText(final String text) {
+        if (text == null || text.isBlank()) {
+            return null;
+        }
+
+        return text;
     }
 }
