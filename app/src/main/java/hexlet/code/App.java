@@ -6,8 +6,11 @@ import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 import gg.jte.resolve.ResourceCodeResolver;
 import hexlet.code.model.Url;
+import hexlet.code.model.UrlCheck;
 import hexlet.code.repository.BaseRepository;
+import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
+import hexlet.code.util.UrlChecker;
 import io.javalin.Javalin;
 import io.javalin.http.NotFoundResponse;
 import io.javalin.rendering.template.JavalinJte;
@@ -69,6 +72,9 @@ public final class App {
             model.put("urls", urls);
             model.put("flash", flash);
 
+            Map<Long, UrlCheck> lastChecks = UrlCheckRepository.getLastChecks();
+            model.put("lastChecks", lastChecks);
+
             ctx.render("urls/index.jte", model);
         });
 
@@ -81,6 +87,9 @@ public final class App {
             Map<String, Object> model = new HashMap<>();
             model.put("url", url);
             model.put("flash", flash);
+
+            List<UrlCheck> checks = UrlCheckRepository.findByUrlId(id);
+            model.put("checks", checks);
 
             ctx.render("urls/show.jte", model);
         });
@@ -109,6 +118,22 @@ public final class App {
                 model.put("flash", "Некорректный URL");
                 ctx.render("index.jte", model);
             }
+        });
+
+        app.post("/urls/{id}/checks", ctx -> {
+            Long id = ctx.pathParamAsClass("id", Long.class).get();
+            Url url = UrlRepository.find(id)
+                    .orElseThrow(() -> new NotFoundResponse("Url not found"));
+
+            try {
+                UrlCheck urlCheck = UrlChecker.check(url);
+                UrlCheckRepository.save(urlCheck);
+                ctx.sessionAttribute("flash", "Страница успешно проверена");
+            } catch (RuntimeException e) {
+                ctx.sessionAttribute("flash", "Произошла ошибка при проверке");
+            }
+
+            ctx.redirect("/urls/" + id);
         });
 
         return app;

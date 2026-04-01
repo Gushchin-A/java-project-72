@@ -14,6 +14,17 @@ import java.util.Map;
 /** Repository for url check entities. */
 public final class UrlCheckRepository {
 
+    /** Index number for parameter. */
+    private static final int PARAMETER_INDEX_1 = 1;
+    /** Index number for parameter. */
+    private static final int PARAMETER_INDEX_2 = 2;
+    /** Index number for parameter. */
+    private static final int PARAMETER_INDEX_3 = 3;
+    /** Index number for parameter. */
+    private static final int PARAMETER_INDEX_4 = 4;
+    /** Index number for parameter. */
+    private static final int PARAMETER_INDEX_5 = 5;
+
     private UrlCheckRepository() {
     }
 
@@ -25,7 +36,8 @@ public final class UrlCheckRepository {
      */
     public static void save(final UrlCheck urlCheck) throws SQLException {
         String sql = """
-                INSERT INTO url_checks (url_id, status_code, title, h1, description)
+                INSERT INTO url_checks
+                (url_id, status_code, title, h1, description)
                 VALUES (?, ?, ?, ?, ?)
                 """;
 
@@ -35,11 +47,11 @@ public final class UrlCheckRepository {
              PreparedStatement statement = connection.prepareStatement(
                      sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
-            statement.setLong(1, urlCheck.getUrlId());
-            statement.setInt(2, urlCheck.getStatusCode());
-            statement.setString(3, urlCheck.getTitle());
-            statement.setString(4, urlCheck.getH1());
-            statement.setString(5, urlCheck.getDescription());
+            statement.setLong(PARAMETER_INDEX_1, urlCheck.getUrlId());
+            statement.setInt(PARAMETER_INDEX_2, urlCheck.getStatusCode());
+            statement.setString(PARAMETER_INDEX_3, urlCheck.getTitle());
+            statement.setString(PARAMETER_INDEX_4, urlCheck.getH1());
+            statement.setString(PARAMETER_INDEX_5, urlCheck.getDescription());
             statement.executeUpdate();
 
             try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
@@ -57,8 +69,11 @@ public final class UrlCheckRepository {
      * @throws SQLException if database error
      * @return list url checks
      */
-    public static List<UrlCheck> findByUrlId(final Long urlId) throws SQLException {
-        String sql = "SELECT * FROM url_checks WHERE url_id = ? ORDER BY id DESC";
+    public static List<UrlCheck> findByUrlId(
+            final Long urlId) throws SQLException {
+        String sql = """
+        SELECT * FROM url_checks WHERE url_id = ? ORDER BY id DESC
+        """;
 
         try (Connection connection = BaseRepository
                 .getDataSource()
@@ -95,7 +110,8 @@ public final class UrlCheckRepository {
             ON url_checks.id = latest_checks.max_id
             """;
 
-        try (Connection connection = BaseRepository.getDataSource().getConnection();
+        try (Connection connection = BaseRepository
+                .getDataSource().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
              ResultSet resultSet = statement.executeQuery()) {
 
@@ -110,7 +126,8 @@ public final class UrlCheckRepository {
         }
     }
 
-    private static UrlCheck buildUrlCheck(final ResultSet resultSet) throws SQLException {
+    private static UrlCheck buildUrlCheck(
+            final ResultSet resultSet) throws SQLException {
         return new UrlCheck(
                 resultSet.getLong("id"),
                 resultSet.getInt("status_code"),

@@ -1,4 +1,5 @@
 @param java.util.List<hexlet.code.model.Url> urls
+@param java.util.Map<java.lang.Long, hexlet.code.model.UrlCheck> lastChecks
 @param String flash
 
 @template.layout(
@@ -13,6 +14,7 @@ content = @`
                 <th>ID</th>
                 <th>Имя</th>
                 <th>Дата создания</th>
+                <th>Последняя проверка</th>
                 <th>Код ответа</th>
             </tr>
         </thead>
@@ -21,8 +23,9 @@ content = @`
                 <tr>
                     <td>${url.getId()}</td>
                     <td><a href="/urls/${url.getId()}">${url.getName()}</a></td>
-                    <td>${url.getCreatedAt().toString()}</td>
-                    <td></td>
+                    <td>${url.getCreatedAt().toLocalDateTime().withNano(0).toString().replace("T", " ")}</td>
+                    <td>${lastChecks.get(url.getId()) != null ? lastChecks.get(url.getId()).getCreatedAt().toLocalDateTime().withNano(0).toString().replace("T", " ") : ""}</td>
+                    <td>${lastChecks.get(url.getId()) != null ? String.valueOf(lastChecks.get(url.getId()).getStatusCode()) : ""}</td>
                 </tr>
             @endfor
         </tbody>
