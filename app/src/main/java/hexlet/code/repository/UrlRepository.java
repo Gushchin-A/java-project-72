@@ -126,6 +126,6 @@ public final class UrlRepository {
         return new Url(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
-                resultSet.getTimestamp("created_at"));
+                resultSet.getTimestamp("created_at").toInstant());
     }
 }

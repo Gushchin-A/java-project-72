@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 
 /** Url entity. */
 @NoArgsConstructor
@@ -17,8 +17,8 @@ public class Url {
     private Long id;
     /** Url name. */
     private String name;
-    /** Url timestamp. */
-    private Timestamp createdAt;
+    /** Url time. */
+    private Instant createdAt;
 
     /**
      * Creates url with name only.

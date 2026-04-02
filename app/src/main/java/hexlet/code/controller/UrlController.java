@@ -70,33 +70,36 @@ public final class UrlController {
      *
      * @param ctx Javalin request context
      */
-    public static void create(Context ctx) throws IllegalStateException {
+    public static void create(Context ctx)
+            throws IllegalStateException, SQLException {
         String input = ctx.formParam("url");
+        String normalizedUrl;
+
         try {
-            String normalizedUrl = normalizeUrl(input);
-            Optional<Url> existingUrl = UrlRepository
-                    .findByName(normalizedUrl);
-
-            if (existingUrl.isPresent()) {
-                Url url = existingUrl
-                        .orElseThrow(() -> new IllegalStateException(
-                                "Url must exist"));
-                ctx.sessionAttribute("flash", "Страница уже существует");
-                ctx.redirect("/urls/" + url.getId());
-                return;
-            }
-
-            Url url = new Url(normalizedUrl);
-            UrlRepository.save(url);
-            ctx.sessionAttribute("flash", "Страница успешно добавлена");
-            ctx.redirect("/urls/" + url.getId());
-
+            normalizedUrl = normalizeUrl(input);
         } catch (Exception e) {
             ctx.status(HttpStatus.UNPROCESSABLE_CONTENT);
             Map<String, String> model = new HashMap<>();
             model.put("flash", "Некорректный URL");
             ctx.render("index.jte", model);
+            return;
         }
+
+        Optional<Url> existingUrl = UrlRepository.findByName(normalizedUrl);
+
+        if (existingUrl.isPresent()) {
+            Url url = existingUrl
+                    .orElseThrow(() -> new IllegalStateException(
+                            "Url must exist"));
+            ctx.sessionAttribute("flash", "Страница уже существует");
+            ctx.redirect("/urls/" + url.getId());
+            return;
+        }
+
+        Url url = new Url(normalizedUrl);
+        UrlRepository.save(url);
+        ctx.sessionAttribute("flash", "Страница успешно добавлена");
+        ctx.redirect("/urls/" + url.getId());
     }
 
     public static void check(Context ctx)

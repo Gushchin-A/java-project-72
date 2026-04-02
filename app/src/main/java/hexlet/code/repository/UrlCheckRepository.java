@@ -135,7 +135,7 @@ public final class UrlCheckRepository {
                 resultSet.getString("h1"),
                 resultSet.getString("description"),
                 resultSet.getLong("url_id"),
-                resultSet.getTimestamp("created_at")
+                resultSet.getTimestamp("created_at").toInstant()
         );
     }
 }

@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 
 /** Url check entity. */
 @NoArgsConstructor
@@ -25,8 +25,8 @@ public class UrlCheck {
     private String description;
     /** Relation Url ID. */
     private long urlId;
-    /** UrlCheck creation timestamp. */
-    private Timestamp createdAt;
+    /** UrlCheck creation time. */
+    private Instant createdAt;
 
     /**
      * Creates url check.
