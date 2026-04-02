@@ -5,29 +5,19 @@ import com.zaxxer.hikari.HikariDataSource;
 import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 import gg.jte.resolve.ResourceCodeResolver;
-import hexlet.code.model.Url;
-import hexlet.code.model.UrlCheck;
+import hexlet.code.controller.UrlController;
 import hexlet.code.repository.BaseRepository;
-import hexlet.code.repository.UrlCheckRepository;
-import hexlet.code.repository.UrlRepository;
-import hexlet.code.util.UrlChecker;
 import io.javalin.Javalin;
-import io.javalin.http.HttpStatus;
-import io.javalin.http.NotFoundResponse;
 import io.javalin.rendering.template.JavalinJte;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public final class App {
 
@@ -63,77 +53,10 @@ public final class App {
             ctx.render("index.jte", model);
         });
 
-        app.get("/urls", ctx -> {
-            List<Url> urls = UrlRepository.getEntities();
-            String flash = ctx.consumeSessionAttribute("flash");
-
-            Map<String, Object> model = new HashMap<>();
-            model.put("urls", urls);
-            model.put("flash", flash);
-
-            Map<Long, UrlCheck> lastChecks = UrlCheckRepository.getLastChecks();
-            model.put("lastChecks", lastChecks);
-
-            ctx.render("urls/index.jte", model);
-        });
-
-        app.get("/urls/{id}", ctx -> {
-            Long id = ctx.pathParamAsClass("id", Long.class).get();
-            Url url = UrlRepository.find(id)
-                    .orElseThrow(() -> new NotFoundResponse("Url not found"));
-
-            String flash = ctx.consumeSessionAttribute("flash");
-            Map<String, Object> model = new HashMap<>();
-            model.put("url", url);
-            model.put("flash", flash);
-
-            List<UrlCheck> checks = UrlCheckRepository.findByUrlId(id);
-            model.put("checks", checks);
-
-            ctx.render("urls/show.jte", model);
-        });
-
-        app.post("/urls", ctx -> {
-            String input = ctx.formParam("url");
-            try {
-                String normalizedUrl = normalizeUrl(input);
-                Optional<Url> existingUrl = UrlRepository
-                        .findByName(normalizedUrl);
-
-                if (existingUrl.isPresent()) {
-                    ctx.sessionAttribute("flash", "Страница уже существует");
-                    ctx.redirect("/urls/" + existingUrl.get().getId());
-                    return;
-                }
-
-                Url url = new Url(normalizedUrl);
-                UrlRepository.save(url);
-                ctx.sessionAttribute("flash", "Страница успешно добавлена");
-                ctx.redirect("/urls/" + url.getId());
-
-            } catch (Exception e) {
-                ctx.status(HttpStatus.UNPROCESSABLE_CONTENT);
-                Map<String, String> model = new HashMap<>();
-                model.put("flash", "Некорректный URL");
-                ctx.render("index.jte", model);
-            }
-        });
-
-        app.post("/urls/{id}/checks", ctx -> {
-            Long id = ctx.pathParamAsClass("id", Long.class).get();
-            Url url = UrlRepository.find(id)
-                    .orElseThrow(() -> new NotFoundResponse("Url not found"));
-
-            try {
-                UrlCheck urlCheck = UrlChecker.check(url);
-                UrlCheckRepository.save(urlCheck);
-                ctx.sessionAttribute("flash", "Страница успешно проверена");
-            } catch (RuntimeException e) {
-                ctx.sessionAttribute("flash", "Произошла ошибка при проверке");
-            }
-
-            ctx.redirect("/urls/" + id);
-        });
+        app.get("/urls", UrlController::index);
+        app.get("/urls/{id}", UrlController::show);
+        app.post("/urls", UrlController::create);
+        app.post("/urls/{id}/checks", UrlController::check);
 
         return app;
     }
@@ -161,21 +84,6 @@ public final class App {
                 "JDBC_DATABASE_URL",
                 "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;"
         );
-    }
-
-    private static String normalizeUrl(final String rawUrl) throws Exception {
-        URI uri = new URI(rawUrl);
-        URL url = uri.toURL();
-
-        String protocol = url.getProtocol();
-        String host = url.getHost();
-        int port = url.getPort();
-
-        if (port == -1) {
-            return protocol + "://" + host;
-        }
-
-        return protocol + "://" + host + ":" + port;
     }
 
     private static void initDatabase()
