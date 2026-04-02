@@ -27,9 +27,9 @@ public final class UrlController {
      * Renders the list of URLs.
      *
      * @param ctx Javalin request context
-     * @throws SQLException if database query fails
+     * @throws SQLException if database error
      */
-    public static void index(Context ctx) throws SQLException {
+    public static void index(final Context ctx) throws SQLException {
         List<Url> urls = UrlRepository.getEntities();
         String flash = ctx.consumeSessionAttribute("flash");
 
@@ -47,9 +47,9 @@ public final class UrlController {
      * Renders url page with checks.
      *
      * @param ctx Javalin request context
-     * @throws SQLException if database query fails
+     * @throws SQLException if database error
      */
-    public static void show(Context ctx) throws SQLException {
+    public static void show(final Context ctx) throws SQLException {
         Long id = ctx.pathParamAsClass("id", Long.class).get();
         Url url = UrlRepository.find(id)
                 .orElseThrow(() -> new NotFoundResponse("Url not found"));
@@ -70,7 +70,7 @@ public final class UrlController {
      *
      * @param ctx Javalin request context
      */
-    public static void create(Context ctx)
+    public static void create(final Context ctx)
             throws IllegalStateException, SQLException {
         String input = ctx.formParam("url");
         String normalizedUrl;
@@ -102,8 +102,14 @@ public final class UrlController {
         ctx.redirect("/urls/" + url.getId());
     }
 
-    public static void check(Context ctx)
-            throws NotFoundResponse, SQLException {
+    /**
+     * Runs a check for url and saves its result.
+     *
+     * @param ctx Javalin request context
+     * @throws SQLException if database error
+     */
+    public static void check(final Context ctx)
+            throws SQLException {
         Long id = ctx.pathParamAsClass("id", Long.class).get();
         Url url = UrlRepository.find(id)
                 .orElseThrow(() -> new NotFoundResponse("Url not found"));

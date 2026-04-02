@@ -28,7 +28,7 @@ public final class App {
      * Builds Javalin application.
      *
      * @throws IOException  if schema file cannot be read
-     * @throws SQLException if database init fails
+     * @throws SQLException if database error
      * @return Javalin app
      */
     public static Javalin getApp() throws IOException, SQLException {

@@ -1,4 +1,5 @@
 @import hexlet.code.util.TextTruncate
+@import hexlet.code.util.DateFormatter
 @param hexlet.code.model.Url url
 @param java.util.List<hexlet.code.model.UrlCheck> checks
 @param String flash
@@ -21,7 +22,7 @@ content = @`
             </tr>
             <tr>
                 <td>Дата создания</td>
-                <td>${url.getCreatedAt().toLocalDateTime().withNano(0).toString().replace("T", " ")}</td>
+                <td>${DateFormatter.format(url.getCreatedAt())}</td>
             </tr>
         </tbody>
     </table>
@@ -51,7 +52,7 @@ content = @`
                         <td>${TextTruncate.truncate(check.getH1())}</td>
                         <td>${TextTruncate.truncate(check.getTitle())}</td>
                         <td>${TextTruncate.truncate(check.getDescription())}</td>
-                        <td>${check.getCreatedAt().toLocalDateTime().withNano(0).toString().replace("T", " ")}</td>
+                        <td>${DateFormatter.format(check.getCreatedAt())}</td>
                     </tr>
                 @endfor
             </tbody>

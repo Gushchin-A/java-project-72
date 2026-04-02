@@ -1,3 +1,4 @@
+@import hexlet.code.util.DateFormatter
 @param java.util.List<hexlet.code.model.Url> urls
 @param java.util.Map<java.lang.Long, hexlet.code.model.UrlCheck> lastChecks
 @param String flash
@@ -23,8 +24,8 @@ content = @`
                 <tr>
                     <td>${url.getId()}</td>
                     <td><a href="/urls/${url.getId()}">${url.getName()}</a></td>
-                    <td>${url.getCreatedAt().toLocalDateTime().withNano(0).toString().replace("T", " ")}</td>
-                    <td>${lastChecks.get(url.getId()) != null ? lastChecks.get(url.getId()).getCreatedAt().toLocalDateTime().withNano(0).toString().replace("T", " ") : ""}</td>
+                    <td>${DateFormatter.format(url.getCreatedAt())}</td>
+                    <td>${lastChecks.get(url.getId()) != null ? DateFormatter.format(lastChecks.get(url.getId()).getCreatedAt()) : ""}</td>
                     <td>${lastChecks.get(url.getId()) != null ? String.valueOf(lastChecks.get(url.getId()).getStatusCode()) : ""}</td>
                 </tr>
             @endfor
