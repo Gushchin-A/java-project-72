@@ -12,6 +12,7 @@ import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.UrlChecker;
 import io.javalin.Javalin;
+import io.javalin.http.HttpStatus;
 import io.javalin.http.NotFoundResponse;
 import io.javalin.rendering.template.JavalinJte;
 
@@ -29,8 +30,6 @@ import java.util.Map;
 import java.util.Optional;
 
 public final class App {
-    /** Unprocessable Entity HTTP status. */
-    private static final int UNPROCESSABLE_ENTITY_STATUS = 422;
 
     private App() {
     }
@@ -113,7 +112,7 @@ public final class App {
                 ctx.redirect("/urls/" + url.getId());
 
             } catch (Exception e) {
-                ctx.status(UNPROCESSABLE_ENTITY_STATUS);
+                ctx.status(HttpStatus.UNPROCESSABLE_CONTENT);
                 Map<String, String> model = new HashMap<>();
                 model.put("flash", "Некорректный URL");
                 ctx.render("index.jte", model);

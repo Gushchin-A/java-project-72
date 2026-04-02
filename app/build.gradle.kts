@@ -1,5 +1,4 @@
 plugins {
-    id("java")
     id("org.sonarqube") version "6.2.0.5505"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     checkstyle
