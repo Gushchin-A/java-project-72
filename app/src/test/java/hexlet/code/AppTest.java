@@ -6,6 +6,7 @@ import hexlet.code.repository.BaseRepository;
 import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
 import io.javalin.Javalin;
+import io.javalin.http.HttpStatus;
 import io.javalin.testtools.JavalinTest;
 import mockwebserver3.MockResponse;
 import mockwebserver3.MockWebServer;
@@ -28,12 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AppTest {
-    /** Test status variable. */
-    private static final int STATUS_200 = 200;
-    /** Test status variable. */
-    private static final int STATUS_422 = 422;
-    /** Test status variable. */
-    private static final int STATUS_404 = 404;
     /** Test status variable. */
     private static final String STATUS_200_STR = "200";
     /** Test html success page. */
@@ -73,7 +68,7 @@ class AppTest {
         JavalinTest.test(app, (server, client) -> {
             Response response = client.get("/");
 
-            assertEquals(STATUS_200, response.code());
+            assertEquals(HttpStatus.OK.getCode(), response.code());
             Assertions.assertNotNull(response.body());
             assertTrue(response.body().string().contains("Анализатор страниц"));
         });
@@ -84,7 +79,7 @@ class AppTest {
         JavalinTest.test(app, (server, client) -> {
             Response response = client.get("/urls");
 
-            assertEquals(STATUS_200, response.code());
+            assertEquals(HttpStatus.OK.getCode(), response.code());
             Assertions.assertNotNull(response.body());
             assertTrue(response.body().string().contains("Сайты"));
         });
@@ -98,7 +93,7 @@ class AppTest {
         JavalinTest.test(app, (server, client) -> {
             Response response = client.get("/urls/" + url.getId());
 
-            assertEquals(STATUS_200, response.code());
+            assertEquals(HttpStatus.OK.getCode(), response.code());
             Assertions.assertNotNull(response.body());
             assertTrue(response
                     .body().string().contains("https://www.starwars.com"));
@@ -111,13 +106,13 @@ class AppTest {
             String requestBody = "url=https://www.starwars.com";
             Response postResponse = client.post("/urls", requestBody);
 
-            assertEquals(STATUS_200, postResponse.code());
+            assertEquals(HttpStatus.OK.getCode(), postResponse.code());
 
             Url savedUrl = UrlRepository
                     .findByName("https://www.starwars.com").orElseThrow();
             Response getResponse = client.get("/urls/" + savedUrl.getId());
 
-            assertEquals(STATUS_200, getResponse.code());
+            assertEquals(HttpStatus.OK.getCode(), getResponse.code());
             Assertions.assertNotNull(getResponse.body());
             assertTrue(getResponse
                     .body().string().contains("https://www.starwars.com"));
@@ -134,7 +129,7 @@ class AppTest {
             String requestBody = "url=https://www.starwars.com";
             Response postResponse = client.post("/urls", requestBody);
 
-            assertEquals(STATUS_200, postResponse.code());
+            assertEquals(HttpStatus.OK.getCode(), postResponse.code());
             Assertions.assertNotNull(postResponse.body());
             assertTrue(postResponse
                     .body().string().contains("https://www.starwars.com"));
@@ -151,7 +146,8 @@ class AppTest {
             String requestBody = "url=w w w .leningrad.spb.tochka.ru";
             Response postResponse = client.post("/urls", requestBody);
 
-            assertEquals(STATUS_422, postResponse.code());
+            assertEquals(HttpStatus.UNPROCESSABLE_CONTENT.getCode(),
+                    postResponse.code());
             Assertions.assertNotNull(postResponse.body());
             assertTrue(postResponse
                     .body().string().contains("Некорректный URL"));
@@ -163,7 +159,7 @@ class AppTest {
         JavalinTest.test(app, (server, client) -> {
             Response response = client.get("/urls/" + "19121");
 
-            assertEquals(STATUS_404, response.code());
+            assertEquals(HttpStatus.NOT_FOUND.getCode(), response.code());
             Assertions.assertNotNull(response.body());
             assertTrue(response.body().string().contains("Url not found"));
         });
@@ -180,7 +176,7 @@ class AppTest {
         JavalinTest.test(app, (server, client) -> {
             Response response = client.get("/urls");
 
-            assertEquals(STATUS_200, response.code());
+            assertEquals(HttpStatus.OK.getCode(), response.code());
             Assertions.assertNotNull(response.body());
 
             String responseBody = response.body().string();
@@ -195,7 +191,7 @@ class AppTest {
         String html = readFixture(SUCCESS_PAGE);
 
         mockWebServer.enqueue(new MockResponse.Builder()
-                .code(STATUS_200)
+                .code(HttpStatus.OK.getCode())
                 .body(html)
                 .build());
 
@@ -206,7 +202,7 @@ class AppTest {
             Response response = client.post(
                     "/urls/" + url.getId() + "/checks", "");
 
-            assertEquals(STATUS_200, response.code());
+            assertEquals(HttpStatus.OK.getCode(), response.code());
             Assertions.assertNotNull(response.body());
 
             List<UrlCheck> checks = UrlCheckRepository.findByUrlId(url.getId());
@@ -221,7 +217,7 @@ class AppTest {
     @Test
     void testCreateUrlCheckWithError() throws SQLException {
         mockWebServer.enqueue(new MockResponse.Builder()
-                .code(STATUS_404)
+                .code(HttpStatus.NOT_FOUND.getCode())
                 .body("")
                 .build());
 
@@ -232,7 +228,7 @@ class AppTest {
             Response response = client.post(
                     "/urls/" + url.getId() + "/checks", "");
 
-            assertEquals(STATUS_200, response.code());
+            assertEquals(HttpStatus.OK.getCode(), response.code());
             Assertions.assertNotNull(response.body());
 
             List<UrlCheck> checks = UrlCheckRepository.findByUrlId(url.getId());
@@ -246,7 +242,7 @@ class AppTest {
         UrlRepository.save(url);
 
         UrlCheck check = new UrlCheck(
-                STATUS_200,
+                HttpStatus.OK.getCode(),
                 "Star Wars page",
                 "May the Force be with you",
                 "Let's celebrate on May 4th!",
@@ -258,7 +254,7 @@ class AppTest {
         JavalinTest.test(app, (server, client) -> {
             Response response = client.get("/urls");
 
-            assertEquals(STATUS_200, response.code());
+            assertEquals(HttpStatus.OK.getCode(), response.code());
             Assertions.assertNotNull(response.body());
 
             String body = response.body().string();

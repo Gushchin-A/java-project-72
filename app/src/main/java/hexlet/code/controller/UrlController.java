@@ -87,18 +87,18 @@ public final class UrlController {
 
         Optional<Url> existingUrl = UrlRepository.findByName(normalizedUrl);
 
-        if (existingUrl.isPresent()) {
-            Url url = existingUrl
-                    .orElseThrow(() -> new IllegalStateException(
-                            "Url must exist"));
-            ctx.sessionAttribute("flash", "Страница уже существует");
+        if (existingUrl.isEmpty()) {
+            Url url = new Url(normalizedUrl);
+            UrlRepository.save(url);
+            ctx.sessionAttribute("flash", "Страница успешно добавлена");
             ctx.redirect("/urls/" + url.getId());
             return;
         }
 
-        Url url = new Url(normalizedUrl);
-        UrlRepository.save(url);
-        ctx.sessionAttribute("flash", "Страница успешно добавлена");
+        Url url = existingUrl
+                .orElseThrow(() -> new IllegalStateException(
+                        "Url must exist"));
+        ctx.sessionAttribute("flash", "Страница уже существует");
         ctx.redirect("/urls/" + url.getId());
     }
 
