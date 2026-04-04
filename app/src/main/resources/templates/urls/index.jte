@@ -14,7 +14,6 @@ content = @`
             <tr>
                 <th>ID</th>
                 <th>Имя</th>
-                <th>Дата создания</th>
                 <th>Последняя проверка</th>
                 <th>Код ответа</th>
             </tr>
@@ -24,7 +23,6 @@ content = @`
                 <tr>
                     <td>${url.getId()}</td>
                     <td><a href="/urls/${url.getId()}">${url.getName()}</a></td>
-                    <td>${DateFormatter.format(url.getCreatedAt())}</td>
                     <td>${lastChecks.get(url.getId()) != null ? DateFormatter.format(lastChecks.get(url.getId()).getCreatedAt()) : ""}</td>
                     <td>${lastChecks.get(url.getId()) != null ? String.valueOf(lastChecks.get(url.getId()).getStatusCode()) : ""}</td>
                 </tr>
