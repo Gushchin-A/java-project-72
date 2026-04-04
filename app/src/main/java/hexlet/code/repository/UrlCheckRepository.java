@@ -72,8 +72,8 @@ public final class UrlCheckRepository {
     public static List<UrlCheck> findByUrlId(
             final Long urlId) throws SQLException {
         String sql = """
-        SELECT * FROM url_checks WHERE url_id = ? ORDER BY id DESC
-        """;
+            SELECT * FROM url_checks WHERE url_id = ? ORDER BY id DESC
+            """;
 
         try (Connection connection = BaseRepository
                 .getDataSource()
